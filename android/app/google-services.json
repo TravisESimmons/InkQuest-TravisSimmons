@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "647736437102",
+    "project_id": "inkquest-ts",
+    "storage_bucket": "inkquest-ts.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:647736437102:android:e511c04e8b6f5a2b66f97f",
+        "android_client_info": {
+          "package_name": "com.example.inkquest_travissimmons"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClPc-QfHgOzPyTV3rg4siu-wjROQsb_2A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
