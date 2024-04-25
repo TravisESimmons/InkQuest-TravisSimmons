@@ -1,5 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import 'package:inkquest_travissimmons/models/artist.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:permission_handler/permission_handler.dart'; // Import permission_handler package
+import 'dart:io';
+
+import 'models/artist.dart';
+import 'result.dart'; // Import the ResultPage widget
 
 class TattooForm extends StatefulWidget {
   const TattooForm({Key? key}) : super(key: key);
@@ -17,6 +26,7 @@ class _TattooFormState extends State<TattooForm> {
   String tattooSize = ''; // Change tattooSize type to String
   String tattooStyle = '';
   String tattooPlacement = '';
+  List<File> selectedFiles = [];
 
   final List<String> tattooStyles = [
     'Traditional',
@@ -39,6 +49,7 @@ class _TattooFormState extends State<TattooForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Existing form fields...
             Text('First Name'),
             TextFormField(
               onChanged: (value) {
@@ -127,32 +138,60 @@ class _TattooFormState extends State<TattooForm> {
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
-                // Construct the submission object with the form data
-                Map<String, dynamic> submissionData = {
-                  'firstName': firstName,
-                  'lastName': lastName,
-                  'age': age,
-                  'gender': gender,
-                  'tattooDescription': tattooDescription,
-                  'tattooSize': tattooSize,
-                  'tattooStyle': tattooStyle,
-                  'tattooPlacement': tattooPlacement,
-                  // You may need to add more fields or modify the structure based on your requirements
-                };
-
-                // Add the submission to the "submissions" collection in Firestore
-                try {
-                  FirebaseFirestore.instance
-                      .collection('submissions')
-                      .add(submissionData);
-                  // Show a success message or navigate to another screen upon successful submission
+              onPressed: () async {
+                // Request storage permission
+                var status = await Permission.storage.request();
+                if (status.isGranted) {
+                  // Permission granted, proceed with file selection
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.image,
+                    allowMultiple: true,
+                  );
+                  if (result != null) {
+                    setState(() {
+                      selectedFiles =
+                          result.paths!.map((path) => File(path!)).toList();
+                    });
+                  } else {
+                    // User canceled the picker
+                  }
+                } else {
+                  // Permission denied, inform the user
                   ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Submission successful!')));
-                } catch (error) {
-                  // Handle any errors that occur during submission
-                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                      content: Text('Error submitting the form: $error')));
+                    SnackBar(content: Text('Storage permission denied')),
+                  );
+                }
+              },
+              child: Text('Select Photos'),
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                // Check if photos are selected
+                if (selectedFiles.isNotEmpty) {
+                  // Upload photos to Firebase Storage
+                  for (File file in selectedFiles) {
+                    String fileName = file.path.split('/').last;
+                    try {
+                      firebase_storage.Reference ref = firebase_storage
+                          .FirebaseStorage.instance
+                          .ref()
+                          .child('uploads/$fileName');
+                      await ref.putFile(file);
+                      String downloadURL = await ref.getDownloadURL();
+                      // Store the download URL in Firebase Firestore along with other form data
+                      // You can modify submissionData to include the photo URLs
+                    } catch (error) {
+                      print('Error uploading photo: $error');
+                      // Handle error
+                    }
+                  }
+                } else {
+                  // Inform the user to select photos
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Please select photos')),
+                  );
                 }
               },
               child: Text('Submit'),
