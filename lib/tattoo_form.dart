@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:image_picker/image_picker.dart';
 import 'package:inkquest_travissimmons/models/artist.dart';
 import 'models/artist.dart';
+import 'dart:io';
 import 'result.dart'; // Import the ResultPage widget
 
 class TattooForm extends StatefulWidget {
@@ -21,6 +23,7 @@ class _TattooFormState extends State<TattooForm> {
   String tattooSize = ''; // Change tattooSize type to String
   String tattooStyle = '';
   String tattooPlacement = '';
+  String? downloadURL;
 
   final List<String> tattooStyles = [
     'Traditional',
@@ -31,6 +34,9 @@ class _TattooFormState extends State<TattooForm> {
 
   // List of available tattoo sizes
   final List<String> tattooSizeOptions = ['Small', 'Medium', 'Large'];
+
+  // Add a property to hold the selected image file
+  File? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
@@ -130,25 +136,64 @@ class _TattooFormState extends State<TattooForm> {
               },
             ),
             SizedBox(height: 16.0),
+            Text(
+              'Selected Photo(s):',
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 18.0,
+              ),
+            ),
+
+            // Add the image preview
+            _selectedImage != null
+                ? Container(
+                    alignment: Alignment.center,
+                    margin: EdgeInsets.only(top: 16.0),
+                    child: Image.file(
+                      _selectedImage!,
+                      width: 200,
+                      height: 200,
+                      fit: BoxFit.cover,
+                    ),
+                  )
+                : Container(),
+
+            // Button to pick image from gallery
             ElevatedButton(
               onPressed: () async {
                 final ImagePicker _picker = ImagePicker();
                 final XFile? image = await _picker.pickImage(
-                  source: ImageSource.gallery, // Pick image from gallery
+                  source: ImageSource.gallery,
                 );
                 if (image != null) {
-                  // Image is picked, you can use it as needed
-                  // For example, you can display the image using Image.file(image)
-                } else {
-                  // User canceled the picker
+                  setState(() {
+                    _selectedImage = File(image.path);
+                  });
                 }
               },
-              child: Text('Pick Image from Gallery'), // Button text
+              child: Text('Upload Reference Images'),
             ),
-            SizedBox(height: 16.0),
+            // Button to capture photo using camera
             ElevatedButton(
               onPressed: () async {
-                // Construct the submission object with the form data
+                final ImagePicker _picker = ImagePicker();
+                final XFile? image = await _picker.pickImage(
+                  source: ImageSource.camera,
+                );
+                if (image != null) {
+                  setState(() {
+                    _selectedImage = File(image.path);
+                  });
+                }
+              },
+              child: Text('Take Photo'),
+            ),
+
+            SizedBox(height: 16.0),
+
+            // Submit button...
+            ElevatedButton(
+              onPressed: () async {
                 Map<String, dynamic> submissionData = {
                   'firstName': firstName,
                   'lastName': lastName,
@@ -158,17 +203,15 @@ class _TattooFormState extends State<TattooForm> {
                   'tattooSize': tattooSize,
                   'tattooStyle': tattooStyle,
                   'tattooPlacement': tattooPlacement,
-                  // You may need to add more fields or modify the structure based on your requirements
+                  'imageURL': downloadURL
                 };
 
                 try {
-                  // Add the submission to the "submissions" collection in Firestore
                   DocumentReference submissionRef = await FirebaseFirestore
                       .instance
                       .collection('submissions')
                       .add(submissionData);
 
-                  // Fetch the artist based on the selected tattoo style
                   QuerySnapshot artistSnapshot = await FirebaseFirestore
                       .instance
                       .collection('artists')
@@ -177,12 +220,12 @@ class _TattooFormState extends State<TattooForm> {
 
                   // Check if there's at least one artist found
                   if (artistSnapshot.docs.isNotEmpty) {
-                    // Get the first artist found (you may need to handle multiple artists differently)
+                    // Get the first artist found
                     Map<String, dynamic> artistData = artistSnapshot.docs.first
                         .data() as Map<String, dynamic>;
                     Artist artist = Artist.fromMap(artistData);
 
-                    // Navigate to the ResultPage with the retrieved artist
+                    // Navigate to the ResultPage
                     Navigator.push(
                       context,
                       MaterialPageRoute(
