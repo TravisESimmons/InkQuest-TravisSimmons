@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:inkquest_travissimmons/models/artist.dart';
 import 'models/artist.dart';
 import 'result.dart'; // Import the ResultPage widget
@@ -127,6 +128,22 @@ class _TattooFormState extends State<TattooForm> {
                   tattooPlacement = value;
                 });
               },
+            ),
+            SizedBox(height: 16.0),
+            ElevatedButton(
+              onPressed: () async {
+                final ImagePicker _picker = ImagePicker();
+                final XFile? image = await _picker.pickImage(
+                  source: ImageSource.gallery, // Pick image from gallery
+                );
+                if (image != null) {
+                  // Image is picked, you can use it as needed
+                  // For example, you can display the image using Image.file(image)
+                } else {
+                  // User canceled the picker
+                }
+              },
+              child: Text('Pick Image from Gallery'), // Button text
             ),
             SizedBox(height: 16.0),
             ElevatedButton(
