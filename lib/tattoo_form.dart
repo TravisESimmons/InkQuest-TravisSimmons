@@ -36,7 +36,11 @@ class _TattooFormState extends State<TattooForm> {
   ];
 
   // List of available tattoo sizes
-  final List<String> tattooSizeOptions = ['Small', 'Medium', 'Large'];
+  final List<String> tattooSizeOptions = [
+    'Small (2-3")',
+    'Medium (5-7")',
+    'Large (9-12")'
+  ];
 
   File? _selectedImage;
 
@@ -116,7 +120,9 @@ class _TattooFormState extends State<TattooForm> {
                   TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Tattoo Description', style: TextStyle(color: Colors.white)),
+            Text(
+                'Describe your tattoo:                                                     (Include as much detail and as many references as possible here)',
+                style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
@@ -127,7 +133,9 @@ class _TattooFormState extends State<TattooForm> {
                   TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Tattoo Placement', style: TextStyle(color: Colors.white)),
+            Text(
+                'Desribe the placement of your tattoo. (Ie; Forearm, Hands, Chest or Legs)',
+                style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
@@ -138,6 +146,10 @@ class _TattooFormState extends State<TattooForm> {
                   TextStyle(color: Colors.white), // Set the text color to white
             ),
 
+            SizedBox(height: 16.0),
+            Text('Size of your tattoo',
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
             DropdownButtonFormField<String>(
               value: null,
               onChanged: (value) {
@@ -159,6 +171,9 @@ class _TattooFormState extends State<TattooForm> {
               }).toList(),
             ),
             SizedBox(height: 16.0),
+            Text("Select your tattoo's Style",
+                style: TextStyle(
+                    color: Colors.white, fontWeight: FontWeight.bold)),
             DropdownButtonFormField<String>(
               value: null,
               onChanged: (value) {
@@ -179,6 +194,7 @@ class _TattooFormState extends State<TattooForm> {
                 );
               }).toList(),
             ),
+
             SizedBox(height: 16.0),
             Text(
               'Selected Photo(s):',
@@ -304,9 +320,7 @@ class _TattooFormState extends State<TattooForm> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   IconButton(
-                    onPressed: () {
-                      // Add Instagram functionality here
-                    },
+                    onPressed: () {},
                     icon: Icon(
                       FontAwesome.instagram,
                       color: Colors.white,
@@ -315,9 +329,7 @@ class _TattooFormState extends State<TattooForm> {
                   ),
                   SizedBox(width: 16.0),
                   IconButton(
-                    onPressed: () {
-                      // Add Facebook functionality here
-                    },
+                    onPressed: () {},
                     icon: Icon(
                       Icons.facebook,
                       color: Colors.white,
