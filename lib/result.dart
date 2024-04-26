@@ -100,17 +100,22 @@ class ResultPage extends StatelessWidget {
   // Method to calculate estimated tattoo cost based on tattoo size and artist rate
   int calculateEstimatedCost() {
     int rateMultiplier = 0;
+    print('tattooSize passed: $tattooSize');
     switch (tattooSize.toLowerCase()) {
-      case 'small':
+      case 'small (2-3")':
         rateMultiplier = 3;
         break;
-      case 'medium':
+      case 'medium (5-7")':
         rateMultiplier = 7;
         break;
-      case 'large':
+      case 'large (9-12")':
         rateMultiplier = 11;
         break;
+      default:
+        print('No match found for size');
+        break;
     }
+    print('Rate Multiplier: $rateMultiplier, Artist Rate: ${artist.rate}');
     return rateMultiplier * artist.rate;
   }
 }
