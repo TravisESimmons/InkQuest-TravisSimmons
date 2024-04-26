@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-import 'package:image_picker/image_picker.dart';
 import 'package:inkquest_travissimmons/models/artist.dart';
-import 'models/artist.dart';
+
+import 'package:image_picker/image_picker.dart';
+import 'package:flutter_vector_icons/flutter_vector_icons.dart';
+
 import 'dart:io';
-import 'result.dart'; // Import the ResultPage widget
+import 'result.dart';
 
 class TattooForm extends StatefulWidget {
   const TattooForm({Key? key}) : super(key: key);
@@ -35,39 +38,62 @@ class _TattooFormState extends State<TattooForm> {
   // List of available tattoo sizes
   final List<String> tattooSizeOptions = ['Small', 'Medium', 'Large'];
 
-  // Add a property to hold the selected image file
   File? _selectedImage;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tattoo Form'),
+        title: Text('Pre-consulation Tattoo Form'),
       ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text('First Name'),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.black87, Colors.purple],
+          ),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.all(16.0),
+          child:
+              Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 20.0),
+              child: Center(
+                child: Text(
+                  'InkQuest',
+                  style: TextStyle(
+                    fontSize: 32,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+            Text('First Name', style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
                   firstName = value;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Last Name'),
+            Text('Last Name', style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
                   lastName = value;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Age'),
+            Text('Age', style: TextStyle(color: Colors.white)),
             TextFormField(
               keyboardType: TextInputType.number,
               onChanged: (value) {
@@ -75,27 +101,43 @@ class _TattooFormState extends State<TattooForm> {
                   age = int.tryParse(value) ?? 0;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Gender'),
+            Text('Gender', style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
                   gender = value;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Tattoo Description'),
+            Text('Tattoo Description', style: TextStyle(color: Colors.white)),
             TextFormField(
               onChanged: (value) {
                 setState(() {
                   tattooDescription = value;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
             ),
             SizedBox(height: 16.0),
-            Text('Tattoo Size'),
+            Text('Tattoo Placement', style: TextStyle(color: Colors.white)),
+            TextFormField(
+              onChanged: (value) {
+                setState(() {
+                  tattooPlacement = value;
+                });
+              },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
+            ),
+
             DropdownButtonFormField<String>(
               value: null,
               onChanged: (value) {
@@ -103,15 +145,20 @@ class _TattooFormState extends State<TattooForm> {
                   tattooSize = value!;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
+              dropdownColor: Colors
+                  .purple, // Set the dropdown background color to dark purple
               items: tattooSizeOptions.map((size) {
                 return DropdownMenuItem<String>(
                   value: size,
-                  child: Text(size),
+                  child: Text(size,
+                      style: TextStyle(
+                          color: Colors.white)), // Set the text color to white
                 );
               }).toList(),
             ),
             SizedBox(height: 16.0),
-            Text('Tattoo Style'),
             DropdownButtonFormField<String>(
               value: null,
               onChanged: (value) {
@@ -119,21 +166,18 @@ class _TattooFormState extends State<TattooForm> {
                   tattooStyle = value!;
                 });
               },
+              style:
+                  TextStyle(color: Colors.white), // Set the text color to white
+              dropdownColor:
+                  Colors.black, // Set the dropdown background color to black
               items: tattooStyles.map((style) {
                 return DropdownMenuItem<String>(
                   value: style,
-                  child: Text(style),
+                  child: Text(style,
+                      style: TextStyle(
+                          color: Colors.white)), // Set the text color to white
                 );
               }).toList(),
-            ),
-            SizedBox(height: 16.0),
-            Text('Tattoo Placement'),
-            TextFormField(
-              onChanged: (value) {
-                setState(() {
-                  tattooPlacement = value;
-                });
-              },
             ),
             SizedBox(height: 16.0),
             Text(
@@ -141,10 +185,12 @@ class _TattooFormState extends State<TattooForm> {
               style: TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 18.0,
+                color: Colors.white,
               ),
             ),
 
             // Add the image preview
+
             _selectedImage != null
                 ? Container(
                     alignment: Alignment.center,
@@ -158,6 +204,7 @@ class _TattooFormState extends State<TattooForm> {
                   )
                 : Container(),
 
+            SizedBox(height: 16.0),
             // Button to pick image from gallery
             ElevatedButton(
               onPressed: () async {
@@ -249,7 +296,38 @@ class _TattooFormState extends State<TattooForm> {
               },
               child: Text('Submit'),
             ),
-          ],
+
+            SizedBox(height: 16.0),
+            Align(
+              alignment: Alignment.center,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                    onPressed: () {
+                      // Add Instagram functionality here
+                    },
+                    icon: Icon(
+                      FontAwesome.instagram,
+                      color: Colors.white,
+                      size: 32.0,
+                    ),
+                  ),
+                  SizedBox(width: 16.0),
+                  IconButton(
+                    onPressed: () {
+                      // Add Facebook functionality here
+                    },
+                    icon: Icon(
+                      Icons.facebook,
+                      color: Colors.white,
+                      size: 32.0,
+                    ),
+                  )
+                ],
+              ),
+            ),
+          ]),
         ),
       ),
     );
