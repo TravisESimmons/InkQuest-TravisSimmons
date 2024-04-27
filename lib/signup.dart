@@ -19,14 +19,37 @@ class _SignUpState extends State<SignUp> {
         email: _emailController.text,
         password: _passwordController.text,
       );
+      // User successfully signed up, now showing the success message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('User successfully signed up.'),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      // Navigate to the sign-in page using named route
+      Navigator.pushReplacementNamed(context, '/signIn');
     } on FirebaseAuthException catch (e) {
+      String errorMessage = 'An error occurred. Please try again.';
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        errorMessage = 'The password provided is too weak.';
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        errorMessage = 'The account already exists for that email.';
       }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(errorMessage),
+          backgroundColor: Colors.red,
+        ),
+      );
     } catch (e) {
-      print(e);
+      print('Sign up error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An unexpected error occurred.'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
